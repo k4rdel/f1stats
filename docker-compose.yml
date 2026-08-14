@@ -22,6 +22,12 @@ services:
         condition: service_healthy
     ports:
       - 8080:80
+    volumes:
+      - type: bind
+        source: ./
+        target: /code
+        bind:
+          selinux: z
 
 volumes:
   postgres_data:

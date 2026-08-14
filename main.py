@@ -3,9 +3,9 @@ import httpx
 from typing import Annotated
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from schemas import Driver 
+from schemas import Driver, Race
 from database import engine, Base, get_session
-from models import Drivers
+from models import Drivers, Races
 
 app = FastAPI()
 
@@ -37,3 +37,32 @@ async def get_driver(driver_id: str, session: Annotated[Session, Depends(get_ses
             session.commit()
             session.refresh(newDriver)
             return newDriver
+        
+@app.get("/drivers", response_model=list[Driver])
+async def get_drivers(session: Annotated[Session, Depends(get_session)]):
+    stmt = select(Drivers)
+    driversResult = session.execute(stmt).scalars()
+    return driversResult
+
+@app.get("/races/{season}", response_model=list[Race])
+async def get_races(season: str, session: Annotated[Session, Depends(get_session)]):
+    stmt = select(Races).where(Races.season == season)
+    racesResult = session.execute(stmt).scalars().all()
+    if racesResult != []:
+        return racesResult
+    else:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f'https://api.jolpi.ca/ergast/f1/{season}/races.json')
+            data = response.json()["MRData"]["RaceTable"]["Races"]
+            if response.json()["MRData"]["RaceTable"]["Races"] == []:
+                raise HTTPException(status_code=404, detail="Races not found")
+            for x in range(len(data)):
+                newRace = Races(
+                    season=season,
+                    raceName=data[x]["raceName"],
+                    date=data[x]["date"]
+                )
+                session.add(newRace)
+            session.commit()
+            
+            return session.execute(stmt).scalars().all()

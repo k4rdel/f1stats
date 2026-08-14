@@ -14,3 +14,11 @@ class Drivers(Base):
     
     def __repr__(self) -> str:
         return f"Driver(id={self.id!r}), driverId={self.driverId!r}), name={self.name!r}, lastName={self.lastName!r}, driverNumber={self.driverNumber!r}"
+    
+class Races(Base):
+    __tablename__ = "race"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    season: Mapped[str] = mapped_column(String(4))
+    raceName: Mapped[str] = mapped_column(String(30))
+    date: Mapped[str] = mapped_column(String(30))

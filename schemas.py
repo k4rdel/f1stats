@@ -5,3 +5,8 @@ class Driver(BaseModel):
     name: str
     lastName: str
     driverNumber: str
+    
+class Race(BaseModel):
+    season: str
+    raceName: str
+    date: str
