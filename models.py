@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -12,9 +13,6 @@ class Drivers(Base):
     lastName: Mapped[str] = mapped_column(String(30))
     driverNumber: Mapped[str] = mapped_column(String(10))
     
-    def __repr__(self) -> str:
-        return f"Driver(id={self.id!r}), driverId={self.driverId!r}), name={self.name!r}, lastName={self.lastName!r}, driverNumber={self.driverNumber!r}"
-    
 class Races(Base):
     __tablename__ = "race"
     
@@ -22,3 +20,4 @@ class Races(Base):
     season: Mapped[str] = mapped_column(String(4))
     raceName: Mapped[str] = mapped_column(String(30))
     date: Mapped[str] = mapped_column(String(30))
+    circuitName: Mapped[str] = mapped_column(String(50))

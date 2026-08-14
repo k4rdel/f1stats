@@ -10,3 +10,4 @@ class Race(BaseModel):
     season: str
     raceName: str
     date: str
+    circuitName: str

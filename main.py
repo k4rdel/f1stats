@@ -9,8 +9,6 @@ from models import Drivers, Races
 
 app = FastAPI()
 
-Base.metadata.create_all(engine)
-
 @app.get("/")
 async def root():
     return {"message": "Siema"}
@@ -60,7 +58,8 @@ async def get_races(season: str, session: Annotated[Session, Depends(get_session
                 newRace = Races(
                     season=season,
                     raceName=data[x]["raceName"],
-                    date=data[x]["date"]
+                    date=data[x]["date"],
+                    circuitName=data[x]["Circuit"]["circuitName"]
                 )
                 session.add(newRace)
             session.commit()
