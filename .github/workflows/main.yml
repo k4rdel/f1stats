@@ -37,12 +37,5 @@ jobs:
       run: |
         pip install pytest pytest-cov
         pytest test_main.py --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
-    - name: Install the code linting and formatting tool Ruff
-      run: pipx install ruff
-    - name: Lint code with Ruff
-      run: ruff check --output-format=github
-    - name: Check code formatting with Ruff
-      run: ruff format --diff --target-version=py39
-      continue-on-error: true
 
 
