@@ -3,8 +3,8 @@ import httpx
 from typing import Annotated
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from schemas import Driver, Race
-from database import engine, Base, get_session
+from schemas import Driver, Race, Comparison
+from database import get_session
 from models import Drivers, Races
 
 app = FastAPI()
@@ -13,8 +13,7 @@ app = FastAPI()
 async def root():
     return {"message": "Siema"}
 
-@app.get("/drivers/{driver_id}", response_model=Driver)
-async def get_driver(driver_id: str, session: Annotated[Session, Depends(get_session)]):
+async def fetch_or_get_driver(driver_id, session):
     stmt = select(Drivers).where(Drivers.driverId == driver_id)
     driverResult = session.execute(stmt).scalars().first()
     if driverResult != None:
@@ -35,7 +34,11 @@ async def get_driver(driver_id: str, session: Annotated[Session, Depends(get_ses
             session.commit()
             session.refresh(newDriver)
             return newDriver
-        
+
+@app.get("/drivers/{driver_id}", response_model=Driver)
+async def get_driver(driver_id: str, session: Annotated[Session, Depends(get_session)]):
+    return await fetch_or_get_driver(driver_id, session)
+
 @app.get("/drivers", response_model=list[Driver])
 async def get_drivers(session: Annotated[Session, Depends(get_session)]):
     stmt = select(Drivers)
@@ -65,3 +68,9 @@ async def get_races(season: str, session: Annotated[Session, Depends(get_session
             session.commit()
             
             return session.execute(stmt).scalars().all()
+        
+@app.get("/compare/{driver1}/{driver2}", response_model=Comparison)
+async def compare_driver(driver1: str, driver2: str, session: Annotated[Session, Depends(get_session)]):
+    result1 = await fetch_or_get_driver(driver1, session)
+    result2 = await fetch_or_get_driver(driver2, session)
+    return Comparison(driver1=result1, driver2=result2)
