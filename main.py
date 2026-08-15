@@ -16,7 +16,7 @@ async def root():
 async def fetch_or_get_driver(driver_id, session):
     stmt = select(Drivers).where(Drivers.driverId == driver_id)
     driverResult = session.execute(stmt).scalars().first()
-    if driverResult != None:
+    if driverResult is not None:
         return driverResult
     else:
         async with httpx.AsyncClient() as client:
