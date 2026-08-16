@@ -50,8 +50,10 @@ async def get_driver(driver_id: str, session: Annotated[Session, Depends(get_ses
 async def get_drivers(session: Annotated[Session, Depends(get_session)]):
     stmt = select(Drivers)
     driversResult = session.execute(stmt).scalars()
-    return driversResult
-
+    if driversResult != []:
+        return driversResult
+    else:
+        return {"message": "No drivers avaliable"}
 
 @app.get("/races/{season}", response_model=list[Race])
 async def get_races(season: str, session: Annotated[Session, Depends(get_session)]):
@@ -73,7 +75,10 @@ async def get_races(season: str, session: Annotated[Session, Depends(get_session
                     raceName=data[x]["raceName"],
                     date=data[x]["date"],
                     circuitName=data[x]["Circuit"]["circuitName"],
-                )
+                    locality = data[x]["Circuit"]["Location"]["locality"],
+                    country = data[x]["Circuit"]["Location"]["country"],
+                    lenght = data[x]["Circuit"]["Location"]["long"]
+            )
                 session.add(newRace)
             session.commit()
 

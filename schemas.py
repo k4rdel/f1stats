@@ -16,6 +16,9 @@ class Race(BaseModel):
     raceName: str
     date: str
     circuitName: str
+    locality: str
+    country: str
+    lenght: str
 
 
 class Comparison(BaseModel):

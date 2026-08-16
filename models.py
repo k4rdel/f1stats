@@ -25,3 +25,6 @@ class Races(Base):
     raceName: Mapped[str] = mapped_column(String(30))
     date: Mapped[str] = mapped_column(String(30))
     circuitName: Mapped[str] = mapped_column(String(50))
+    locality: Mapped[Optional[str]] = mapped_column(String(50))
+    country: Mapped[Optional[str]] = mapped_column(String(50))
+    lenght: Mapped[Optional[str]] = mapped_column(String(50))
