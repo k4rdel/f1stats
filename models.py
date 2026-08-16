@@ -14,7 +14,7 @@ class Drivers(Base):
     name: Mapped[str] = mapped_column(String(30))
     lastName: Mapped[str] = mapped_column(String(30))
     driverNumber: Mapped[str] = mapped_column(String(10))
-    nationality: Mapped[Optional[str]] = mapped_column(String(30))
+    nationality: Mapped[str] = mapped_column(String(30))
 
 
 class Races(Base):
@@ -25,6 +25,6 @@ class Races(Base):
     raceName: Mapped[str] = mapped_column(String(30))
     date: Mapped[str] = mapped_column(String(30))
     circuitName: Mapped[str] = mapped_column(String(50))
-    locality: Mapped[Optional[str]] = mapped_column(String(50))
-    country: Mapped[Optional[str]] = mapped_column(String(50))
-    lenght: Mapped[Optional[str]] = mapped_column(String(50))
+    locality: Mapped[str] = mapped_column(String(50))
+    country: Mapped[str] = mapped_column(String(50))
+    lenght: Mapped[str] = mapped_column(String(50))
