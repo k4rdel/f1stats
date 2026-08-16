@@ -43,4 +43,5 @@ def test_get_driver_from_cache():
         "name": "Charles",
         "lastName": "Leclerc",
         "driverNumber": "16",
+        "nationality": None
     }
