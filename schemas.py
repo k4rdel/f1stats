@@ -8,6 +8,7 @@ class Driver(BaseModel):
     name: str
     lastName: str
     driverNumber: str
+    nationality: str | None = None
 
 
 class Race(BaseModel):

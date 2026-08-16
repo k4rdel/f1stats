@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -12,6 +14,7 @@ class Drivers(Base):
     name: Mapped[str] = mapped_column(String(30))
     lastName: Mapped[str] = mapped_column(String(30))
     driverNumber: Mapped[str] = mapped_column(String(10))
+    nationality: Mapped[Optional[str]] = mapped_column(String(30))
 
 
 class Races(Base):

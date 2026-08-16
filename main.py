@@ -33,6 +33,7 @@ async def fetch_or_get_driver(driver_id, session):
                 name=data["givenName"],
                 lastName=data["familyName"],
                 driverNumber=data["permanentNumber"],
+                nationality=data["nationality"]
             )
             session.add(newDriver)
             session.commit()
