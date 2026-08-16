@@ -12,7 +12,6 @@ engine = create_engine(
     echo=True,
 )
 
-
 class Base(DeclarativeBase):
     pass
 

@@ -1,3 +1,7 @@
+import os
+
+os.environ.setdefault("DATABASE_URL", "sqlite:///test_database.db")
+
 from fastapi.testclient import TestClient
 from main import app
 from sqlalchemy import create_engine
