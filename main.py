@@ -33,13 +33,13 @@ async def fetch_or_get_driver(driver_id, session):
                 name=data["givenName"],
                 lastName=data["familyName"],
                 driverNumber=data["permanentNumber"],
-                nationality=data["nationality"]
+                nationality=data["nationality"],
+                winningPercentage= await winning_percentage(driver_id)
             )
             session.add(newDriver)
             session.commit()
             session.refresh(newDriver)
             return newDriver
-
 
 @app.get("/drivers/{driver_id}", response_model=Driver)
 async def get_driver(driver_id: str, session: Annotated[Session, Depends(get_session)]):
@@ -67,7 +67,7 @@ async def get_races(season: str, session: Annotated[Session, Depends(get_session
                 f"https://api.jolpi.ca/ergast/f1/{season}/races.json"
             )
             data = response.json()["MRData"]["RaceTable"]["Races"]
-            if response.json()["MRData"]["RaceTable"]["Races"] == []:
+            if data == []:
                 raise HTTPException(status_code=404, detail="Races not found")
             for x in range(len(data)):
                 newRace = Races(
@@ -87,8 +87,21 @@ async def get_races(season: str, session: Annotated[Session, Depends(get_session
 
 @app.get("/compare/{driver1}/{driver2}", response_model=Comparison)
 async def compare_driver(
-    driver1: str, driver2: str, session: Annotated[Session, Depends(get_session)]
-):
+    driver1: str, driver2: str, session: Annotated[Session, Depends(get_session)]):
     result1 = await fetch_or_get_driver(driver1, session)
     result2 = await fetch_or_get_driver(driver2, session)
     return Comparison(driver1=result1, driver2=result2)
+
+async def winning_percentage(driver_id: str):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            f"https://api.jolpi.ca/ergast/f1/drivers/{driver_id}/results/1.json"
+        )
+        response2 = await client.get(
+            f"https://api.jolpi.ca/ergast/f1/drivers/{driver_id}/results.json"
+        )
+        winnedRaces = int(response.json()["MRData"]["total"])
+        allRaces = int(response2.json()["MRData"]["total"])
+        if winnedRaces is None or allRaces is None:
+            return 0
+        return round(((winnedRaces / allRaces) * 100), 2)

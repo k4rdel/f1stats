@@ -1,6 +1,4 @@
-from typing import Optional
-
-from sqlalchemy import String
+from sqlalchemy import String, Float
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from database import Base
@@ -15,6 +13,7 @@ class Drivers(Base):
     lastName: Mapped[str] = mapped_column(String(30))
     driverNumber: Mapped[str] = mapped_column(String(10))
     nationality: Mapped[str] = mapped_column(String(30))
+    winningPercentage: Mapped[float] = mapped_column(Float, server_default="0.0")
 
 
 class Races(Base):

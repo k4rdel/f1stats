@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL_ALEMBIC = os.getenv("DATABASE_URL")
+DATABASE_URL_ALEMBIC = os.getenv("DATABASE_URL_LOCAL")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

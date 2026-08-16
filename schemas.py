@@ -8,7 +8,8 @@ class Driver(BaseModel):
     name: str
     lastName: str
     driverNumber: str
-    nationality: str | None = None
+    nationality: str
+    winningPercentage: float = 0.0
 
 
 class Race(BaseModel):
