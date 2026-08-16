@@ -13,8 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-POSTGRES_USER = os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+DATABASE_URL_ALEMBIC = os.getenv("DATABASE_URL_LOCAL")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -68,7 +67,7 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = create_engine(f"postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost:5432/f1stats", echo=True, poolclass=pool.NullPool)
+    connectable = create_engine(DATABASE_URL_ALEMBIC, echo=True, poolclass=pool.NullPool)
 
     with connectable.connect() as connection:
         context.configure(
