@@ -48,7 +48,7 @@ def test_read_main():
 def test_get_driver_from_cache():
     with Session(test_engine) as session:
         newDriver = Drivers(
-            driverId="leclerc", name="Charles", lastName="Leclerc", driverNumber="16", nationality = "Monegasque", winningPercentage = 98.12, hatTricks = 10
+            driverId="leclerc", name="Charles", lastName="Leclerc", driverNumber="16", nationality = "Monegasque", winningPercentage = 98.12, hatTricks = 10, poles = 4, podiums = 2, avgStartPosition = 2.31, avgEndPosition = 1.24
         )
         session.add(newDriver)
         session.commit()
@@ -61,7 +61,11 @@ def test_get_driver_from_cache():
         "driverNumber": "16",
         "nationality": "Monegasque",
         "winningPercentage": 98.12,
-        "hatTricks": 10
+        "hatTricks": 10,
+        "poles": 4,
+        "podiums": 2,
+        "avgStartPosition": 2.31,
+        "avgEndPosition": 1.24
     }
 
 def test_get_races_from_cache():
