@@ -33,7 +33,7 @@ async def fetch_or_get_driver(driver_id, session):
                 driverId=driver_id,
                 name=data["givenName"],
                 lastName=data["familyName"],
-                driverNumber=data["permanentNumber"],
+                driverNumber=data.get("permanentNumber", None),
                 nationality=data["nationality"],
                 winningPercentage= await winning_percentage(driver_id)
             )
