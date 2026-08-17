@@ -9,7 +9,7 @@ from main import winning_percentage
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL_LOCAL")
+DATABASE_URL = os.getenv("DATABASE_URL_LOCAL") or os.getenv("DATABASE_URL")
 
 engine = create_engine(
     DATABASE_URL,
