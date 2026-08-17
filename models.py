@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy import String, Float
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -11,7 +13,7 @@ class Drivers(Base):
     driverId: Mapped[str] = mapped_column(String(30))
     name: Mapped[str] = mapped_column(String(30))
     lastName: Mapped[str] = mapped_column(String(30))
-    driverNumber: Mapped[str] = mapped_column(String(10))
+    driverNumber: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
     nationality: Mapped[str] = mapped_column(String(30))
     winningPercentage: Mapped[float] = mapped_column(Float, server_default="0.0")
 

@@ -7,7 +7,7 @@ class Driver(BaseModel):
     driverId: str
     name: str
     lastName: str
-    driverNumber: str
+    driverNumber: str | None = None
     nationality: str
     winningPercentage: float = 0.0
 
