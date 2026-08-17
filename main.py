@@ -6,6 +6,7 @@ from sqlalchemy import select
 from schemas import Driver, Race, Comparison
 from database import get_session
 from models import Drivers, Races
+from utils import winning_percentage
 
 app = FastAPI()
 
@@ -91,17 +92,3 @@ async def compare_driver(
     result1 = await fetch_or_get_driver(driver1, session)
     result2 = await fetch_or_get_driver(driver2, session)
     return Comparison(driver1=result1, driver2=result2)
-
-async def winning_percentage(driver_id: str):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            f"https://api.jolpi.ca/ergast/f1/drivers/{driver_id}/results/1.json"
-        )
-        response2 = await client.get(
-            f"https://api.jolpi.ca/ergast/f1/drivers/{driver_id}/results.json"
-        )
-        winnedRaces = int(response.json()["MRData"]["total"])
-        allRaces = int(response2.json()["MRData"]["total"])
-        if winnedRaces is None or allRaces is None:
-            return 0
-        return round(((winnedRaces / allRaces) * 100), 2)
