@@ -6,7 +6,7 @@ from sqlalchemy import select
 from schemas import Driver, Race, Comparison
 from database import get_session
 from models import Drivers, Races
-from utils import winning_percentage
+from utils import winning_percentage, howManyHatTricks
 
 app = FastAPI()
 
@@ -30,12 +30,13 @@ async def fetch_or_get_driver(driver_id, session):
                 raise HTTPException(status_code=404, detail="Driver not found")
             data = response.json()["MRData"]["DriverTable"]["Drivers"][0]
             newDriver = Drivers(
-                driverId=driver_id,
-                name=data["givenName"],
-                lastName=data["familyName"],
-                driverNumber=data.get("permanentNumber", None),
-                nationality=data["nationality"],
-                winningPercentage= await winning_percentage(driver_id)
+                driverId = driver_id,
+                name = data["givenName"],
+                lastName = data["familyName"],
+                driverNumber = data.get("permanentNumber", None),
+                nationality = data["nationality"],
+                winningPercentage = await winning_percentage(driver_id),
+                hatTricks = await howManyHatTricks(driver_id)
             )
             session.add(newDriver)
             session.commit()

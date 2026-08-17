@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, create_engine
 from models import Drivers, Races
 from dotenv import load_dotenv
-from main import winning_percentage
+from utils import *
 
 load_dotenv()
 
@@ -30,4 +30,6 @@ with Session(engine) as session:
                     driver.nationality = data["nationality"]
             if driver.winningPercentage == 0.0:
                 driver.winningPercentage = asyncio.run(winning_percentage(driver.driverId))
+            if driver.hatTricks == 0:
+                driver.hatTricks = asyncio.run(howManyHatTricks(driver.driverId))
     session.commit()

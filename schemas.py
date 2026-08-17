@@ -10,6 +10,7 @@ class Driver(BaseModel):
     driverNumber: str | None = None
     nationality: str
     winningPercentage: float = 0.0
+    hatTricks: int = 0
 
 
 class Race(BaseModel):
