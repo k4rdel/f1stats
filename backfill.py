@@ -1,4 +1,5 @@
 import os
+import time
 import httpx
 import asyncio
 from sqlalchemy.orm import Session
@@ -32,4 +33,14 @@ with Session(engine) as session:
                 driver.winningPercentage = asyncio.run(winning_percentage(driver.driverId))
             if driver.hatTricks == 0:
                 driver.hatTricks = asyncio.run(howManyHatTricks(driver.driverId))
+            if driver.poles == 0:
+                driver.poles = asyncio.run(howManyPoles(driver.driverId))
+            if driver.podiums == 0:
+                driver.podiums = asyncio.run(howManyPodiums(driver.driverId))
+            if driver.avgStartPosition == 0.0:
+                driver.avgStartPosition = asyncio.run(averageStartPosition(driver.driverId))
+            if driver.avgEndPosition == 0.0:
+                driver.avgEndPosition = asyncio.run(averageEndPosition(driver.driverId))
+            
+            time.sleep(1)
     session.commit()

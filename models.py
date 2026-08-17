@@ -17,6 +17,10 @@ class Drivers(Base):
     nationality: Mapped[str] = mapped_column(String(30))
     winningPercentage: Mapped[float] = mapped_column(Float, server_default="0.0")
     hatTricks: Mapped[int] = mapped_column(Integer, server_default="0")
+    poles: Mapped[int] = mapped_column(Integer, server_default="0")
+    podiums: Mapped[int] = mapped_column(Integer, server_default="0")
+    avgStartPosition: Mapped[float] = mapped_column(Float, server_default="0.0")
+    avgEndPosition: Mapped[float] = mapped_column(Float, server_default="0.0")
 
 class Races(Base):
     __tablename__ = "race"

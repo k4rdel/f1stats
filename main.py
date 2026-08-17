@@ -6,7 +6,7 @@ from sqlalchemy import select
 from schemas import Driver, Race, Comparison
 from database import get_session
 from models import Drivers, Races
-from utils import winning_percentage, howManyHatTricks
+from utils import *
 
 app = FastAPI()
 
@@ -36,7 +36,11 @@ async def fetch_or_get_driver(driver_id, session):
                 driverNumber = data.get("permanentNumber", None),
                 nationality = data["nationality"],
                 winningPercentage = await winning_percentage(driver_id),
-                hatTricks = await howManyHatTricks(driver_id)
+                hatTricks = await howManyHatTricks(driver_id),
+                poles = await howManyPoles(driver_id),
+                podiums = await howManyPodiums(driver_id),
+                avgStartPosition = await averageStartPosition(driver_id),
+                avgEndPosition = await averageEndPosition(driver_id)
             )
             session.add(newDriver)
             session.commit()

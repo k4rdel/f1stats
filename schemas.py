@@ -11,6 +11,10 @@ class Driver(BaseModel):
     nationality: str
     winningPercentage: float = 0.0
     hatTricks: int = 0
+    poles: int = 0
+    podiums: int = 0
+    avgStartPosition: float = 0.0
+    avgEndPosition: float = 0.0
 
 
 class Race(BaseModel):
