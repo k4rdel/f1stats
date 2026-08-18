@@ -1,10 +1,12 @@
+import asyncio
+
 from fastapi import FastAPI, HTTPException, Depends
 import httpx
 from typing import Annotated
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from schemas import Driver, Race, Comparison
-from database import get_session
+from database import get_session, engine
 from models import Drivers, Races
 from utils import *
 
@@ -18,7 +20,7 @@ async def root():
 
 async def fetch_or_get_driver(driver_id, session):
     stmt = select(Drivers).where(Drivers.driverId == driver_id)
-    driverResult = session.execute(stmt).scalars().first()
+    driverResult = (await session.execute(stmt)).scalars().first()
     if driverResult is not None:
         return driverResult
     else:
@@ -29,42 +31,56 @@ async def fetch_or_get_driver(driver_id, session):
             if response.json()["MRData"]["DriverTable"]["Drivers"] == []:
                 raise HTTPException(status_code=404, detail="Driver not found")
             data = response.json()["MRData"]["DriverTable"]["Drivers"][0]
+            
+            avgStartPosition, avgEndPosition = await averagePositions(driver_id)
+            
+            winPct, hatTricks, poles, podiums = await asyncio.gather(
+                winning_percentage(driver_id),
+                howManyHatTricks(driver_id),
+                howManyPoles(driver_id),
+                howManyPodiums(driver_id)
+            )
+            
             newDriver = Drivers(
                 driverId = driver_id,
                 name = data["givenName"],
                 lastName = data["familyName"],
                 driverNumber = data.get("permanentNumber", None),
                 nationality = data["nationality"],
-                winningPercentage = await winning_percentage(driver_id),
-                hatTricks = await howManyHatTricks(driver_id),
-                poles = await howManyPoles(driver_id),
-                podiums = await howManyPodiums(driver_id),
-                avgStartPosition = await averageStartPosition(driver_id),
-                avgEndPosition = await averageEndPosition(driver_id)
+                winningPercentage = winPct,
+                hatTricks = hatTricks,
+                poles = poles,
+                podiums = podiums,
+                avgStartPosition = avgStartPosition,
+                avgEndPosition = avgEndPosition
             )
             session.add(newDriver)
-            session.commit()
-            session.refresh(newDriver)
+            await session.commit()
+            await session.refresh(newDriver)
             return newDriver
 
+async def fetch_or_get_driver_isolated(driver_id):
+    async with AsyncSession(engine) as session:
+        return await fetch_or_get_driver(driver_id, session)
+
 @app.get("/drivers/{driver_id}", response_model=Driver)
-async def get_driver(driver_id: str, session: Annotated[Session, Depends(get_session)]):
+async def get_driver(driver_id: str, session: Annotated[AsyncSession, Depends(get_session)]):
     return await fetch_or_get_driver(driver_id, session)
 
 
 @app.get("/drivers", response_model=list[Driver])
-async def get_drivers(session: Annotated[Session, Depends(get_session)]):
+async def get_drivers(session: Annotated[AsyncSession, Depends(get_session)]):
     stmt = select(Drivers)
-    driversResult = session.execute(stmt).scalars()
+    driversResult = (await session.execute(stmt)).scalars().all()
     if driversResult != []:
         return driversResult
     else:
         return {"message": "No drivers avaliable"}
 
 @app.get("/races/{season}", response_model=list[Race])
-async def get_races(season: str, session: Annotated[Session, Depends(get_session)]):
+async def get_races(season: str, session: Annotated[AsyncSession, Depends(get_session)]):
     stmt = select(Races).where(Races.season == season)
-    racesResult = session.execute(stmt).scalars().all()
+    racesResult = (await session.execute(stmt)).scalars().all()
     if racesResult != []:
         return racesResult
     else:
@@ -86,14 +102,14 @@ async def get_races(season: str, session: Annotated[Session, Depends(get_session
                     lenght = data[x]["Circuit"]["Location"]["long"]
             )
                 session.add(newRace)
-            session.commit()
+            await session.commit()
 
-            return session.execute(stmt).scalars().all()
-
+            return (await session.execute(stmt)).scalars().all()
 
 @app.get("/compare/{driver1}/{driver2}", response_model=Comparison)
-async def compare_driver(
-    driver1: str, driver2: str, session: Annotated[Session, Depends(get_session)]):
-    result1 = await fetch_or_get_driver(driver1, session)
-    result2 = await fetch_or_get_driver(driver2, session)
+async def compare_driver(driver1: str, driver2: str, session: Annotated[AsyncSession, Depends(get_session)]):
+    result1, result2 = await asyncio.gather(
+        fetch_or_get_driver_isolated(driver1),
+        fetch_or_get_driver_isolated(driver2)
+    )
     return Comparison(driver1=result1, driver2=result2)

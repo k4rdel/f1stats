@@ -17,6 +17,16 @@ engine = create_engine(
     echo=True,
 )
 
+async def fetch_all_stats(driver_id):
+    avgPositions, winPct, hatTricks, poles, podiums = await asyncio.gather(
+        averagePositions(driver_id),
+        winning_percentage(driver_id),
+        howManyHatTricks(driver_id),
+        howManyPoles(driver_id),
+        howManyPodiums(driver_id),
+    )
+    return avgPositions, winPct, hatTricks, poles, podiums
+
 with Session(engine) as session:
     stmt = select(Drivers)
     driversResult = session.execute(stmt).scalars().all()
@@ -29,18 +39,13 @@ with Session(engine) as session:
                     response = client.get(f"https://api.jolpi.ca/ergast/f1/drivers/{driver.driverId}.json")
                     data = response.json()["MRData"]["DriverTable"]["Drivers"][0]
                     driver.nationality = data["nationality"]
-            if driver.winningPercentage == 0.0:
-                driver.winningPercentage = asyncio.run(winning_percentage(driver.driverId))
-            if driver.hatTricks == 0:
-                driver.hatTricks = asyncio.run(howManyHatTricks(driver.driverId))
-            if driver.poles == 0:
-                driver.poles = asyncio.run(howManyPoles(driver.driverId))
-            if driver.podiums == 0:
-                driver.podiums = asyncio.run(howManyPodiums(driver.driverId))
-            if driver.avgStartPosition == 0.0:
-                driver.avgStartPosition = asyncio.run(averageStartPosition(driver.driverId))
-            if driver.avgEndPosition == 0.0:
-                driver.avgEndPosition = asyncio.run(averageEndPosition(driver.driverId))
-            
-            time.sleep(1)
+            if driver.winningPercentage == 0.0 or driver.hatTricks == 0 or driver.poles == 0 or driver.podiums == 0 or driver.avgStartPosition == 0.0 or driver.avgEndPosition == 0.0:
+                (avgStart, avgEnd), winPct, hatTricks, poles, podiums = asyncio.run(fetch_all_stats(driver.driverId))
+                driver.winningPercentage = winPct
+                driver.hatTricks = hatTricks
+                driver.poles = poles
+                driver.podiums = podiums
+                driver.avgStartPosition = avgStart
+                driver.avgEndPosition = avgEnd
+                time.sleep(1)
     session.commit()
