@@ -1,20 +1,27 @@
 import asyncio
-
-from fastapi import FastAPI, HTTPException, Depends
 import httpx
+
+from fastapi import FastAPI, HTTPException, Depends, Request
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
 from schemas import Driver, Race, Comparison
 from database import get_session, get_engine
 from models import Drivers, Races
 from utils import *
 
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
-
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 @app.get("/")
-async def root():
+@limiter.limit("15/minute")
+async def root(request: Request):
     return {"message": "Siema"}
 
 
@@ -64,12 +71,14 @@ async def fetch_or_get_driver_isolated(driver_id, engine):
         return await fetch_or_get_driver(driver_id, session)
 
 @app.get("/drivers/{driver_id}", response_model=Driver)
-async def get_driver(driver_id: str, session: Annotated[AsyncSession, Depends(get_session)]):
+@limiter.limit("10/minute")
+async def get_driver(driver_id: str, session: Annotated[AsyncSession, Depends(get_session)], request: Request):
     return await fetch_or_get_driver(driver_id, session)
 
 
 @app.get("/drivers", response_model=list[Driver])
-async def get_drivers(session: Annotated[AsyncSession, Depends(get_session)]):
+@limiter.limit("15/minute")
+async def get_drivers(session: Annotated[AsyncSession, Depends(get_session)], request: Request):
     stmt = select(Drivers)
     driversResult = (await session.execute(stmt)).scalars().all()
     if driversResult != []:
@@ -78,7 +87,8 @@ async def get_drivers(session: Annotated[AsyncSession, Depends(get_session)]):
         raise HTTPException(status_code=404, detail="Races not found")
 
 @app.get("/races/{season}", response_model=list[Race])
-async def get_races(season: str, session: Annotated[AsyncSession, Depends(get_session)]):
+@limiter.limit("15/minute")
+async def get_races(season: str, session: Annotated[AsyncSession, Depends(get_session)], request: Request):
     stmt = select(Races).where(Races.season == season)
     racesResult = (await session.execute(stmt)).scalars().all()
     if racesResult != []:
@@ -108,7 +118,8 @@ async def get_races(season: str, session: Annotated[AsyncSession, Depends(get_se
             return (await session.execute(stmt)).scalars().all()
 
 @app.get("/compare/{driver1}/{driver2}", response_model=Comparison)
-async def compare_driver(driver1: str, driver2: str, engine: Annotated[AsyncSession, Depends(get_engine)]):
+@limiter.limit("10/minute")
+async def compare_driver(driver1: str, driver2: str, engine: Annotated[AsyncSession, Depends(get_engine)], request: Request):
     result1, result2 = await asyncio.gather(
         fetch_or_get_driver_isolated(driver1, engine),
         fetch_or_get_driver_isolated(driver2, engine)
