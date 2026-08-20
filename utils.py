@@ -1,5 +1,10 @@
 import asyncio
+from fastapi import HTTPException
 import httpx
+
+def handleNotFoundRaces(response, offset):
+    if response.json()["MRData"]["RaceTable"]["Races"] == [] and offset == 0:
+        raise HTTPException(status_code=404, detail="Races not found")
 
 async def get_with_retry(client, url, max_retries=3):
     for attempt in range(max_retries):
@@ -21,6 +26,7 @@ async def winning_percentage(driver_id: str) -> float:
             client,
             f"https://api.jolpi.ca/ergast/f1/drivers/{driver_id}/results.json"
         )
+        
         winnedRaces = int(response.json()["MRData"]["total"])
         allRaces = int(response2.json()["MRData"]["total"])
         if winnedRaces is None or allRaces is None:
@@ -36,6 +42,8 @@ async def howManyHatTricks(driver_id: str) -> int:
                 client,
                 f"https://api.jolpi.ca/ergast/f1/drivers/{driver_id}/results/1.json?limit=100&offset={offset}"
             )
+            handleNotFoundRaces(response, offset)
+            
             data = response.json()["MRData"]["RaceTable"]["Races"]
             if not data:
                 break
@@ -61,6 +69,8 @@ async def howManyPoles(driver_id: str) -> int:
                 client,
                 f"https://api.jolpi.ca/ergast/f1/drivers/{driver_id}/results.json?limit=100&offset={offset}"
             )
+            handleNotFoundRaces(response, offset)
+            
             data = response.json()["MRData"]["RaceTable"]["Races"]
             if not data:
                 break
@@ -85,6 +95,7 @@ async def howManyPodiums(driver_id: str) -> int:
                 client,
                 f"https://api.jolpi.ca/ergast/f1/drivers/{driver_id}/results/{endPosition}.json?limit=1"
             )
+            
             podiums += int(response.json()["MRData"]["total"])
         return podiums
 
@@ -99,6 +110,8 @@ async def averagePositions(driver_id: str) -> tuple[float, float]:
                 client,
                 f"https://api.jolpi.ca/ergast/f1/drivers/{driver_id}/results.json?limit=100&offset={offset}"
             )
+            handleNotFoundRaces(response, offset)
+            
             data = response.json()["MRData"]["RaceTable"]["Races"]
             
             if not data:

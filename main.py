@@ -75,7 +75,7 @@ async def get_drivers(session: Annotated[AsyncSession, Depends(get_session)]):
     if driversResult != []:
         return driversResult
     else:
-        return {"message": "No drivers avaliable"}
+        raise HTTPException(status_code=404, detail="Races not found")
 
 @app.get("/races/{season}", response_model=list[Race])
 async def get_races(season: str, session: Annotated[AsyncSession, Depends(get_session)]):
@@ -88,6 +88,8 @@ async def get_races(season: str, session: Annotated[AsyncSession, Depends(get_se
             response = await client.get(
                 f"https://api.jolpi.ca/ergast/f1/{season}/races.json"
             )
+            if response.status_code != 200:
+                raise HTTPException(status_code=404, detail="Season not found")
             data = response.json()["MRData"]["RaceTable"]["Races"]
             if data == []:
                 raise HTTPException(status_code=404, detail="Races not found")
