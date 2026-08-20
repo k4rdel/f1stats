@@ -19,3 +19,6 @@ class Base(DeclarativeBase):
 async def get_session():
     async with AsyncSession(engine) as session:
         yield session
+
+def get_engine():
+    return engine

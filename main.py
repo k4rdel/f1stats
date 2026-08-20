@@ -6,7 +6,7 @@ from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from schemas import Driver, Race, Comparison
-from database import get_session, engine
+from database import get_session, get_engine
 from models import Drivers, Races
 from utils import *
 
@@ -59,7 +59,7 @@ async def fetch_or_get_driver(driver_id, session):
             await session.refresh(newDriver)
             return newDriver
 
-async def fetch_or_get_driver_isolated(driver_id):
+async def fetch_or_get_driver_isolated(driver_id, engine):
     async with AsyncSession(engine) as session:
         return await fetch_or_get_driver(driver_id, session)
 
@@ -107,9 +107,9 @@ async def get_races(season: str, session: Annotated[AsyncSession, Depends(get_se
             return (await session.execute(stmt)).scalars().all()
 
 @app.get("/compare/{driver1}/{driver2}", response_model=Comparison)
-async def compare_driver(driver1: str, driver2: str, session: Annotated[AsyncSession, Depends(get_session)]):
+async def compare_driver(driver1: str, driver2: str, engine: Annotated[AsyncSession, Depends(get_engine)]):
     result1, result2 = await asyncio.gather(
-        fetch_or_get_driver_isolated(driver1),
-        fetch_or_get_driver_isolated(driver2)
+        fetch_or_get_driver_isolated(driver1, engine),
+        fetch_or_get_driver_isolated(driver2, engine)
     )
     return Comparison(driver1=result1, driver2=result2)

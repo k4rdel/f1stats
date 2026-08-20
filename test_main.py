@@ -7,7 +7,7 @@ os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///test_database.db")
 from fastapi.testclient import TestClient
 from main import app
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from database import get_session, Base
+from database import get_engine, Base
 from models import Drivers, Races
 
 client = TestClient(app)
@@ -30,7 +30,7 @@ async def override_dependency():
         yield session
 
 
-app.dependency_overrides[get_session] = override_dependency
+app.dependency_overrides[get_engine] = lambda: test_engine
 
 
 @pytest.fixture(autouse=True)
@@ -88,3 +88,46 @@ async def test_get_races_from_cache():
         "country": "Bahrain", 
         "lenght": "50.5106"
     }]
+    
+async def test_compare_drivers_from_cache():
+    async with AsyncSession(test_engine) as session:
+        newDriver = Drivers(
+            driverId="leclerc", name="Charles", lastName="Leclerc", driverNumber="16", nationality = "Monegasque", winningPercentage = 98.12, hatTricks = 10, poles = 4, podiums = 2, avgStartPosition = 2.31, avgEndPosition = 1.24
+        )
+        newDriver2 = Drivers(
+            driverId="max_verstappen", name="Max", lastName="Verstappen", driverNumber="3", nationality = "Dutch", winningPercentage = 29.1, hatTricks = 14, poles = 48, podiums = 131, avgStartPosition = 8.46, avgEndPosition = 9.50
+        )
+        session.add(newDriver)
+        session.add(newDriver2)
+        await session.commit()
+
+    response = client.get("/compare/leclerc/max_verstappen")
+    assert response.status_code == 200
+    assert response.json() == {
+        "driver1": {
+            "driverId": "leclerc",
+            "name": "Charles",
+            "lastName": "Leclerc",
+            "driverNumber": "16",
+            "nationality": "Monegasque",
+            "winningPercentage": 98.12,
+            "hatTricks": 10,
+            "poles": 4,
+            "podiums": 2,
+            "avgStartPosition": 2.31,
+            "avgEndPosition": 1.24
+        },
+        "driver2": {
+            "driverId": "max_verstappen",
+            "name": "Max",
+            "lastName": "Verstappen",
+            "driverNumber": "3",
+            "nationality": "Dutch",
+            "winningPercentage": 29.1,
+            "hatTricks": 14,
+            "poles": 48,
+            "podiums": 131,
+            "avgStartPosition": 8.46,
+            "avgEndPosition": 9.50
+        }
+    }
