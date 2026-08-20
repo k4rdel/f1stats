@@ -32,4 +32,3 @@ class Races(Base):
     circuitName: Mapped[str] = mapped_column(String(50))
     locality: Mapped[str] = mapped_column(String(50))
     country: Mapped[str] = mapped_column(String(50))
-    lenght: Mapped[str] = mapped_column(String(50))

@@ -24,7 +24,6 @@ class Race(BaseModel):
     circuitName: str
     locality: str
     country: str
-    lenght: str
 
 
 class Comparison(BaseModel):

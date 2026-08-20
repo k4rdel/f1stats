@@ -100,8 +100,7 @@ async def get_races(season: str, session: Annotated[AsyncSession, Depends(get_se
                     date=data[x]["date"],
                     circuitName=data[x]["Circuit"]["circuitName"],
                     locality = data[x]["Circuit"]["Location"]["locality"],
-                    country = data[x]["Circuit"]["Location"]["country"],
-                    lenght = data[x]["Circuit"]["Location"]["long"]
+                    country = data[x]["Circuit"]["Location"]["country"]
             )
                 session.add(newRace)
             await session.commit()

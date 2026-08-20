@@ -73,7 +73,7 @@ async def test_get_driver_from_cache():
 async def test_get_races_from_cache():
     async with AsyncSession(test_engine) as session:
         newRace = Races(
-            season="2024", raceName="Bahrain Grand Prix", date="2024-03-02", circuitName="Bahrain International Circuit", locality = "Sakhir", country = "Bahrain", lenght = "50.5106"
+            season="2024", raceName="Bahrain Grand Prix", date="2024-03-02", circuitName="Bahrain International Circuit", locality = "Sakhir", country = "Bahrain"
         )
         session.add(newRace)
         await session.commit()
@@ -85,8 +85,7 @@ async def test_get_races_from_cache():
         "date": "2024-03-02", 
         "circuitName": "Bahrain International Circuit", 
         "locality": "Sakhir", 
-        "country": "Bahrain", 
-        "lenght": "50.5106"
+        "country": "Bahrain"
     }]
     
 async def test_compare_drivers_from_cache():
