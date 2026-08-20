@@ -29,10 +29,10 @@ cp .env.example .env
 W `.env` ustaw dane PostgreSQL oraz URL używany przez aplikację:
 
 ```dotenv
-POSTGRES_USER=chagneit
-POSTGRES_PASSWORD=chagneit
-POSTGRES_DB=chagneit
-DATABASE_URL=postgresql+psycopg://chagneit:chagneit@db:5432/chagneit
+POSTGRES_USER=your_user
+POSTGRES_PASSWORD=your_password
+POSTGRES_DB=your_database
+DATABASE_URL=postgresql+psycopg://your_user:your_password@db:5432/your_database
 ```
 
 ### 2. Uruchom API i bazę
@@ -41,7 +41,7 @@ DATABASE_URL=postgresql+psycopg://chagneit:chagneit@db:5432/chagneit
 docker compose up --build
 ```
 
-Aplikacja będzie dostępna pod adresem `http://localhost:8080`.
+Aplikacja będzie dostępna pod adresem `http://localhost:80`.
 
 Przy pierwszym uruchomieniu migracje i opcjonalny backfill można wykonać skryptem:
 
@@ -75,7 +75,7 @@ alembic upgrade head
 fastapi dev main.py
 ```
 
-API będzie działać pod `http://127.0.0.1:8000`.
+API będzie działać pod `http://127.0.0.1:80`.
 
 ## Endpointy
 
@@ -90,9 +90,9 @@ API będzie działać pod `http://127.0.0.1:8000`.
 ### Przykładowe zapytania
 
 ```bash
-curl http://localhost:8080/drivers/leclerc
-curl http://localhost:8080/races/2024
-curl http://localhost:8080/compare/leclerc/max_verstappen
+curl http://localhost:80/drivers/leclerc
+curl http://localhost:80/races/2024
+curl http://localhost:80/compare/leclerc/max_verstappen
 ```
 
 Przykładowy response dla `/drivers/leclerc`:
@@ -117,8 +117,8 @@ Przykładowy response dla `/drivers/leclerc`:
 
 Po uruchomieniu aplikacji FastAPI udostępnia interaktywną dokumentację:
 
-- Swagger UI: [`/docs`](http://localhost:8080/docs)
-- ReDoc: [`/redoc`](http://localhost:8080/redoc)
+- Swagger UI: [`/docs`](http://localhost:80/docs)
+- ReDoc: [`/redoc`](http://localhost:80/redoc)
 
 ## Limity zapytań
 
