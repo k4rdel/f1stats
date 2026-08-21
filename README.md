@@ -1,3 +1,7 @@
+*Przeczytaj w innym języku: [English](README.en.md), [Polski](README.md).*
+
+---
+
 # F1 Stats
 
 > Asynchroniczne API do odkrywania statystyk kierowców Formuły 1, porównywania ich wyników i przeglądania kalendarza sezonów.

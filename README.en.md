@@ -1,3 +1,7 @@
+*Read this in other languages: [English](README.en.md), [Polski](README.md).*
+
+---
+
 # F1 Stats
 
 > An asynchronous API for exploring Formula 1 driver statistics, comparing results, and browsing season calendars.
