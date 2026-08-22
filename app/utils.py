@@ -6,11 +6,11 @@ def handleNotFoundRaces(response, offset):
     if response.json()["MRData"]["RaceTable"]["Races"] == [] and offset == 0:
         raise HTTPException(status_code=404, detail="Races not found")
 
-async def get_with_retry(client, url, max_retries=3):
+async def get_with_retry(client, url, max_retries=5):
     for attempt in range(max_retries):
         response = await client.get(url)
         if response.status_code == 429:
-            wait_time = 2 ** attempt
+            wait_time = 3 ** attempt
             await asyncio.sleep(wait_time)
             continue
         return response

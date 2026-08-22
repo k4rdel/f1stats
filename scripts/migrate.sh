@@ -2,4 +2,4 @@
 set -e
 
 alembic upgrade head
-python scripts/backfill.py
+python -m scripts.backfill
