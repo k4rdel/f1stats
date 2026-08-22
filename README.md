@@ -50,10 +50,10 @@ Aplikacja będzie dostępna pod adresem `http://localhost:80`.
 Przy pierwszym uruchomieniu migracje i opcjonalny backfill można wykonać skryptem:
 
 ```bash
-docker compose exec app ./migrate.sh
+docker compose exec app ./scripts/migrate.sh
 ```
 
-> `migrate.sh` uruchamia `alembic upgrade head`, a następnie `backfill.py`. Backfill może wykonywać zapytania do Jolpica F1 API.
+> `scripts/migrate.sh` uruchamia `alembic upgrade head`, a następnie `scripts/backfill.py`. Backfill może wykonywać zapytania do Jolpica F1 API.
 
 ## Uruchomienie lokalne
 
@@ -76,7 +76,7 @@ Następnie wykonaj migracje i uruchom serwer deweloperski:
 
 ```bash
 alembic upgrade head
-fastapi dev main.py
+fastapi dev app/main.py
 ```
 
 API będzie działać pod `http://127.0.0.1:80`.
@@ -145,16 +145,20 @@ pytest
 
 ```text
 .
-├── main.py              # endpointy FastAPI i logika cache'owania
-├── models.py            # modele SQLAlchemy
-├── schemas.py           # modele response Pydantic
-├── database.py          # silnik i sesje bazy danych
-├── utils.py             # obliczenia statystyk F1
-├── backfill.py          # uzupełnianie danych
-├── migrate.sh           # migracje + backfill
+├── app/                 # pakiet aplikacji FastAPI
+│   ├── main.py          # endpointy i logika cache'owania
+│   ├── models.py        # modele SQLAlchemy
+│   ├── schemas.py       # modele response Pydantic
+│   ├── database.py       # silnik i sesje bazy danych
+│   └── utils.py         # obliczenia statystyk F1
+├── scripts/             # skrypty operacyjne
+│   ├── backfill.py       # uzupełnianie danych
+│   └── migrate.sh        # migracje + backfill
+├── tests/               # testy aplikacji
+│   └── test_main.py      # testy endpointów
 ├── alembic/              # historia migracji
 ├── docker-compose.yml    # PostgreSQL + API
-└── test_main.py          # testy endpointów
+└── requirements.txt      # zależności Pythona
 ```
 
 ## Stack

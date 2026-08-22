@@ -50,10 +50,10 @@ The application will be available at `http://localhost:80`.
 On the first run, migrations and the optional backfill can be executed with:
 
 ```bash
-docker compose exec app ./migrate.sh
+docker compose exec app ./scripts/migrate.sh
 ```
 
-> `migrate.sh` runs `alembic upgrade head` followed by `backfill.py`. The backfill may send requests to the Jolpica F1 API.
+> `scripts/migrate.sh` runs `alembic upgrade head` followed by `scripts/backfill.py`. The backfill may send requests to the Jolpica F1 API.
 
 ## Local development
 
@@ -76,7 +76,7 @@ Run the migrations and start the development server:
 
 ```bash
 alembic upgrade head
-fastapi dev main.py
+fastapi dev app/main.py
 ```
 
 The API will be available at `http://127.0.0.1:80`.
@@ -145,16 +145,20 @@ pytest
 
 ```text
 .
-├── main.py              # FastAPI endpoints and caching logic
-├── models.py            # SQLAlchemy models
-├── schemas.py           # Pydantic response models
-├── database.py          # Database engine and sessions
-├── utils.py             # F1 statistics calculations
-├── backfill.py          # Data backfill script
-├── migrate.sh           # Migrations + backfill
+├── app/                 # FastAPI application package
+│   ├── main.py          # Endpoints and caching logic
+│   ├── models.py        # SQLAlchemy models
+│   ├── schemas.py       # Pydantic response models
+│   ├── database.py       # Database engine and sessions
+│   └── utils.py          # F1 statistics calculations
+├── scripts/             # Operational scripts
+│   ├── backfill.py       # Data backfill script
+│   └── migrate.sh        # Migrations + backfill
+├── tests/               # Application tests
+│   └── test_main.py      # Endpoint tests
 ├── alembic/              # Migration history
 ├── docker-compose.yml    # PostgreSQL + API
-└── test_main.py          # Endpoint tests
+└── requirements.txt      # Python dependencies
 ```
 
 ## Stack

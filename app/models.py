@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy import String, Float, Integer
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
-from database import Base
+from .database import Base
 
 
 class Drivers(Base):

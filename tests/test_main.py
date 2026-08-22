@@ -5,10 +5,10 @@ import asyncio
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///test_database.db")
 
 from fastapi.testclient import TestClient
-from main import app
+from app.main import app
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from database import get_engine, Base
-from models import Drivers, Races
+from app.database import get_engine, Base
+from app.models import Drivers, Races
 
 client = TestClient(app)
 

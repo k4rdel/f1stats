@@ -4,9 +4,9 @@ import httpx
 import asyncio
 from sqlalchemy.orm import Session
 from sqlalchemy import select, create_engine
-from models import Drivers, Races
+from app.models import Drivers, Races
 from dotenv import load_dotenv
-from utils import *
+from app.utils import *
 
 load_dotenv()
 
