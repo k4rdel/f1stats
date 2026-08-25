@@ -187,3 +187,7 @@ pytest
 ## Data source
 
 Historical data is fetched from the [Jolpica F1 API](https://api.jolpi.ca/ergast/f1/), the successor to the Ergast Developer API. F1 Stats is not an official Formula 1 product.
+
+## Author
+
+Created by [Oskar Sodel](https://github.com/k4rdel/).
