@@ -13,6 +13,8 @@
 
 F1 Stats łączy dane z [Jolpica F1 API](https://api.jolpi.ca/ergast/f1/) z lokalną bazą danych. Gdy aplikacja otrzyma zapytanie o kierowcę albo sezon, najpierw sprawdza cache, a dopiero potem pobiera brakujące dane z zewnętrznego API.
 
+**Aplikacja online:** [f1stats-production-55c7.up.railway.app](https://f1stats-production-55c7.up.railway.app/)
+
 ## Co potrafi?
 
 - pobierać i cache'ować statystyki kierowców,
@@ -125,8 +127,8 @@ Przykładowy response dla `/drivers/leclerc`:
 
 Po uruchomieniu aplikacji FastAPI udostępnia interaktywną dokumentację:
 
-- Swagger UI: [`/docs`](http://localhost:8080/docs)
-- ReDoc: [`/redoc`](http://localhost:8080/redoc)
+- Swagger UI: [`/docs`](https://f1stats-production-55c7.up.railway.app/docs)
+- ReDoc: [`/redoc`](https://f1stats-production-55c7.up.railway.app/redoc)
 
 ## Limity zapytań
 
