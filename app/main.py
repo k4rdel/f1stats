@@ -4,7 +4,7 @@ import httpx
 from fastapi import FastAPI, HTTPException, Depends, Request
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, text
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -125,3 +125,13 @@ async def compare_driver(driver1: str, driver2: str, engine: Annotated[AsyncSess
         fetch_or_get_driver_isolated(driver2, engine)
     )
     return Comparison(driver1=result1, driver2=result2)
+
+@app.get("/health")
+@limiter.limit("15/minute")
+async def health_check(session: Annotated[AsyncSession, Depends(get_session)], request: Request):
+    try:
+        await session.execute(text('SELECT 1'))
+    except Exception as e:
+        print(f"!!! Health check error: {e}")
+        raise HTTPException(status_code=503, detail="Database is unavailable")
+    return {"status": "ok", "database": "connected"}

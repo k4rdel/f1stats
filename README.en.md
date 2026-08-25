@@ -33,10 +33,10 @@ cp .env.example .env
 Set the PostgreSQL credentials and the database URL in `.env`:
 
 ```dotenv
-POSTGRES_USER=your_user
-POSTGRES_PASSWORD=your_password
-POSTGRES_DB=your_database
-DATABASE_URL=postgresql+psycopg://your_user:your_password@db:5432/your_database
+POSTGRES_USER=change_it
+POSTGRES_PASSWORD=change_it
+POSTGRES_DB=change_it
+DATABASE_URL=postgresql+psycopg://change_it:change_it@db:5432/change_it
 ```
 
 ### 2. Start the API and database
@@ -45,7 +45,7 @@ DATABASE_URL=postgresql+psycopg://your_user:your_password@db:5432/your_database
 docker compose up --build
 ```
 
-The application will be available at `http://localhost:80`.
+The application will be available at `http://localhost:8080`.
 
 On the first run, migrations and the optional backfill can be executed with:
 
@@ -54,6 +54,8 @@ docker compose exec app ./scripts/migrate.sh
 ```
 
 > `scripts/migrate.sh` runs `alembic upgrade head` followed by `scripts/backfill.py`. The backfill may send requests to the Jolpica F1 API.
+
+The API container listens on port `80`, which Docker maps to port `8080` on the host. Connect to the application at `http://localhost:8080`.
 
 ## Local development
 
@@ -69,7 +71,7 @@ cp .env.example .env
 When running outside Docker, point the database URL to `localhost`:
 
 ```dotenv
-DATABASE_URL=postgresql+psycopg://chagneit:chagneit@localhost:5432/chagneit
+DATABASE_URL=postgresql+psycopg://change_it:change_it@localhost:5432/change_it
 ```
 
 Run the migrations and start the development server:
@@ -79,13 +81,14 @@ alembic upgrade head
 fastapi dev app/main.py
 ```
 
-The API will be available at `http://127.0.0.1:80`.
+The local FastAPI development server will be available at `http://127.0.0.1:8000`. Port `80` is used only by the Docker Compose container.
 
 ## Endpoints
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/` | Basic health check |
+| `GET` | `/health` | Checks API availability and the database connection |
 | `GET` | `/drivers` | List of drivers currently stored in the cache |
 | `GET` | `/drivers/{driver_id}` | Driver statistics; missing data is fetched from Jolpica |
 | `GET` | `/races/{season}` | Races for a season; missing seasons are cached |
@@ -94,9 +97,10 @@ The API will be available at `http://127.0.0.1:80`.
 ### Example requests
 
 ```bash
-curl http://localhost:80/drivers/leclerc
-curl http://localhost:80/races/2024
-curl http://localhost:80/compare/leclerc/max_verstappen
+curl http://localhost:8080/health
+curl http://localhost:8080/drivers/leclerc
+curl http://localhost:8080/races/2024
+curl http://localhost:8080/compare/leclerc/max_verstappen
 ```
 
 Example response for `/drivers/leclerc`:
@@ -121,8 +125,8 @@ Example response for `/drivers/leclerc`:
 
 Once the application is running, FastAPI provides interactive documentation:
 
-- Swagger UI: [`/docs`](http://localhost:80/docs)
-- ReDoc: [`/redoc`](http://localhost:80/redoc)
+- Swagger UI: [`/docs`](http://localhost:8080/docs)
+- ReDoc: [`/redoc`](http://localhost:8080/redoc)
 
 ## Rate limits
 
