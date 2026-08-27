@@ -6,6 +6,7 @@
 
 > An asynchronous API for exploring Formula 1 driver statistics, comparing results, and browsing season calendars.
 
+[![Release](https://img.shields.io/github/v/release/k4rdel/f1stats)](https://github.com/k4rdel/f1stats/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/k4rdel/f1stats/main.yml)](https://github.com/k4rdel/f1stats/actions)
 [![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-async-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
