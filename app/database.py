@@ -7,8 +7,12 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+raw_url = DATABASE_URL.replace("postgresql+psycopg", "postgresql+asyncpg")
+needs_ssl = "sslmode=require" in raw_url
+
 engine = create_async_engine(
-    DATABASE_URL.replace("postgresql+psycopg", "postgresql+asyncpg"),
+    raw_url.split("?")[0],
+    connect_args={"ssl": "require"} if needs_ssl else {},
     echo=True,
 )
 
