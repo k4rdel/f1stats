@@ -124,6 +124,8 @@ Example response for `/drivers/leclerc`:
 }
 ```
 
+![Comape response GIF](https://github.com/k4rdel/f1stats/blob/main/static/comparegif.gif)
+
 ## API documentation
 
 Once the application is running, FastAPI provides interactive documentation:
