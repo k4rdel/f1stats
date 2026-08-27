@@ -5,10 +5,13 @@ import asyncio
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///test_database.db")
 
 from fastapi.testclient import TestClient
-from app.main import app
+from unittest.mock import AsyncMock
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+
+from app.main import app
 from app.database import get_engine, Base
 from app.models import Drivers, Races
+from app.utils import *
 
 client = TestClient(app)
 
@@ -130,3 +133,59 @@ async def test_compare_drivers_from_cache():
             "avgEndPosition": 9.50
         }
     }
+
+class FakeResponse:
+    def __init__(self, status_code, json_data=None):
+        self.status_code = status_code
+        self._json_data = json_data
+    
+    def json(self):
+        return self._json_data
+    
+class FakeClient:
+    def __init__(self, responses):
+        self.responses = responses
+        self.call_count = 0
+    
+    async def get(self, url):
+        response = self.responses[self.call_count]
+        self.call_count += 1
+        return response
+    
+async def test_get_with_retry_retries_on_429(mocker):
+    fake_client = FakeClient([
+        FakeResponse(429),
+        FakeResponse(200, {"some": "data"})
+    ])
+    
+    result = await get_with_retry(fake_client, "http://fake-url")
+    assert result.status_code == 200
+    
+async def test_get_with_retry_gives_up_after_max_retries(mocker):
+    mocker.patch("app.utils.asyncio.sleep", new_callable=AsyncMock)
+    
+    fake_client = FakeClient([
+        FakeResponse(429),
+        FakeResponse(429),
+        FakeResponse(429),
+        FakeResponse(429),
+        FakeResponse(429),
+    ])
+    
+    result = await get_with_retry(fake_client, "http://fake-url")
+    assert result.status_code == 429
+    
+def test_handle_not_found_races_on_empty():
+    fake_response = FakeResponse(200, {"MRData": {"RaceTable": {"Races": []}}})
+    
+    with pytest.raises(HTTPException) as exc_info:
+        handleNotFoundRaces(fake_response, 0)
+    
+    assert exc_info.value.status_code == 404
+    
+def test_handle_not_found_races_on_end():
+    fake_response = FakeResponse(200, {"MRData": {"RaceTable": {"Races": []}}})
+    
+    result = handleNotFoundRaces(fake_response, 100)
+    
+    assert result == None
