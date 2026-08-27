@@ -6,11 +6,11 @@
 
 > Asynchroniczne API do odkrywania statystyk kierowców Formuły 1, porównywania ich wyników i przeglądania kalendarza sezonów.
 
-[![CI](https://github.com/k4rdel/f1stats/actions/workflows/main.yml/badge.svg)](https://github.com/k4rdel/f1stats/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/k4rdel/f1stats/main.yml)](https://github.com/k4rdel/f1stats/actions)
 [![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-async-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-ready-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![License](https://img.shields.io/badge/license-private-lightgrey)](#)
+[![License](https://img.shields.io/github/license/k4rdel/f1stats)](#)
 
 F1 Stats łączy dane z [Jolpica F1 API](https://api.jolpi.ca/ergast/f1/) z lokalną bazą danych. Gdy aplikacja otrzyma zapytanie o kierowcę albo sezon, najpierw sprawdza cache, a dopiero potem pobiera brakujące dane z zewnętrznego API.
 
