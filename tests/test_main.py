@@ -47,7 +47,7 @@ async def clear_database():
 def test_read_main():
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Welcome in the f1stats by Oskar Sodel!"}
+    assert response.json() == {"message": "Welcome to the f1stats by Oskar Sodel!"}
 
 
 async def test_get_driver_from_cache():
