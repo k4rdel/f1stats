@@ -22,7 +22,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 @app.get("/")
 @limiter.limit("15/minute")
 async def root(request: Request):
-    return {"message": "Welcome in the f1stats by Oskar Sodel!"}
+    return {"message": "Welcome to the f1stats by Oskar Sodel!"}
 
 
 async def fetch_or_get_driver(driver_id, session):
